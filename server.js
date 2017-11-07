@@ -68,34 +68,11 @@ app.get('/', function(req, res) {
             console.log('statusCode:', response && response.statusCode);
         }
 
-
-
     });
 
 });
 
-app.get('/home', function(req, res) {
 
-    var moviesDiscoverURL = "https://api.themoviedb.org/3/discover/movie?api_key=" + apiKey + "&language=" + lang + "&sort_by=" + sort + "&include_adult=true&include_video=false&page=1";
-    request(moviesDiscoverURL, function(error, response, body) {
-        // seulement si la réponse n'est pas 404 ()
-        if (response.statusCode !== 404) {
-
-            // la requête nous renvoie les infos qui seront stockées au format JSON dans une variable "body":
-            movies = JSON.parse(body);
-
-            MovieModel.find(function(err, likedmovies) {
-                res.render('home', { movies, likedmovies });
-            })
-
-            // on insere cette variable dans le tableau cityList qui est lu par le front
-        } else {
-            console.log('statusCode:', response && response.statusCode);
-        }
-
-    });
-
-});
 
 app.get('/like', function(req, res) {
     if (req.query.movie_id && req.query.movie_id != "") {
@@ -120,7 +97,7 @@ app.get('/like', function(req, res) {
 
                 });
 
-                console.log(newMovie);
+                //console.log(newMovie);
 
                 // on insere dans la base de donnees
                 newMovie.save(function(error, movie) {
@@ -137,6 +114,18 @@ app.get('/like', function(req, res) {
     };
 });
 
+app.get('/unlike', function(req, res) {
+    // recupere ID unique envoyé en requête et supprime entrée correspondante dans la base de données
+    MovieModel.remove({ _id: req.query.movie_id }, function(error, ville) {
+        //console.log(error);
+        MovieModel.find(function(err, likedMovies) {
+            // la collection retournée est utilisée pour le render
+            res.render('review', { movies: likedMovies });
+        });
+    });
+
+});
+
 app.get('/review', function(req, res) {
     MovieModel.find(function(err, movies) {
         res.render('review', { movies: movies });
@@ -144,7 +133,24 @@ app.get('/review', function(req, res) {
 });
 
 
+app.get('/single', function(req, res) {
+    var singleMovieID = req.query.movie_id;
 
+    //la ville demandée en url via le formulaire à openweathermap est stockée dans une variable
+    var movieURL = "https://api.themoviedb.org/3/movie/" + singleMovieID + "?api_key=" + apiKey + "&language=" + lang;
+    var creditsURL = "https://api.themoviedb.org/3/movie/" + singleMovieID + "/credits?api_key=" + apiKey;
+
+    request(movieURL, function(error, response, body) {
+        var body = JSON.parse(body);
+        request(creditsURL, function(error, response, credits) {
+            var credits = JSON.parse(credits);
+            res.render('single', { body, credits });
+
+        });
+    });
+
+
+});
 
 
 //LISTEN

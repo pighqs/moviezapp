@@ -28,7 +28,7 @@
 	<div id="site-content">
 		<header class="site-header">
 			<div class="container">
-				<a href="home.html" id="branding">
+				<a href="/" id="branding">
 					<img src="images/logo.png" alt="" class="logo">
 					<div class="logo-copy">
 						<h1 class="site-title">Moviz</h1>
@@ -39,7 +39,7 @@
 				<div class="main-navigation">
 					<button type="button" class="menu-toggle"><i class="fa fa-bars"></i></button>
 					<ul class="menu">
-						<li class="menu-item  current-menu-item"><a href="home">Last releases</a></li>
+						<li class="menu-item  current-menu-item"><a href="/">Last releases</a></li>
 						<li class="menu-item"><a href="review">My movies</a></li>
 						<li class="menu-item"><a href="contact">Contact</a></li>
 							<!--
@@ -49,10 +49,11 @@
 						-->
 					</ul> <!-- .menu -->
 
-						<!--<form action="#" class="search-form">
+						<form action="#" class="search-form">
 							<input type="text" placeholder="Search...">
 							<button><i class="fa fa-search"></i></button>
-						</form>-->
+						</form>
+
 					</div> <!-- .main-navigation -->
 
 					<div class="mobile-navigation"></div>
@@ -65,14 +66,16 @@
 						<div class="movie-list">
 							<% for(var i=0; i<movies.results.length; i++) { %>
 							<div class="movie">
-								<figure class="movie-poster"><img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt=""></figure>
+								<a href="/single?&movie_id=<%=movies.results[i].id%>">
+									<figure class="movie-poster"><img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt=""></figure>
+								</a>
 								<div class="movie-title"><%=movies.results[i].title%>
 									<% var heart = "fa fa-heart-o" ; %>
 									<%for (var j= 0; j<likedmovies.length; j++) {
 										if(likedmovies[j].title == movies.results[i].original_title) {
-											var heart = "fa fa-heart";
-											}
-										 }%>
+											heart = "fa fa-heart";
+										}
+									}%>
 
 									<a class="like" href="/like?&movie_id=<%=movies.results[i].id%>">
 										<i class="<%=heart%>" aria-hidden="true"></i>
