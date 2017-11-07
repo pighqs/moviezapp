@@ -69,7 +69,6 @@ app.get('/', function(req, res) {
         }
 
     });
-
 });
 
 
@@ -148,9 +147,23 @@ app.get('/single', function(req, res) {
 
         });
     });
-
-
 });
+
+
+app.get('/search', function(req, res) {
+    var recherche = req.query.movieSearch;
+    var searchURL = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query=" + recherche;
+
+    request(searchURL, function(error, response, searchResults) {
+        var movies = JSON.parse(searchResults);
+
+        MovieModel.find(function(err, likedmovies) {
+            res.render('home', { movies, likedmovies });
+        })
+    });
+});
+
+
 
 
 //LISTEN

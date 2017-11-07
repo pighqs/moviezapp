@@ -49,60 +49,63 @@
 						-->
 					</ul> <!-- .menu -->
 
-						<form action="#" class="search-form">
-							<input type="text" placeholder="Search...">
-							<button><i class="fa fa-search"></i></button>
-						</form>
+					<form action="/search" class="search-form">
+						<input class="active" id="search" placeholder="Search..." type="text" name="movieSearch">
+						<button><i class="fa fa-search"></i></button>
+					</form> <!-- .menu -->
 
-					</div> <!-- .main-navigation -->
 
-					<div class="mobile-navigation"></div>
-				</div>
-			</header>
-			<main class="main-content">
-				<div class="container">
-					<div class="page">
+				</div> <!-- .main-navigation -->
 
-						<div class="movie-list">
-							<% for(var i=0; i<movies.results.length; i++) { %>
-							<div class="movie">
-								<a href="/single?&movie_id=<%=movies.results[i].id%>">
-									<figure class="movie-poster"><img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt=""></figure>
+				<div class="mobile-navigation"></div>
+			</div>
+		</header>
+		<main class="main-content">
+			<div class="container">
+				<div class="page">
+
+					<div class="movie-list">
+						<% for(var i=0; i<movies.results.length; i++) { %>
+						<div class="movie">
+							<a href="/single?&movie_id=<%=movies.results[i].id%>">
+								<figure class="movie-poster">
+									<img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt="">
+								</figure>
+							</a>
+							<div class="movie-title"><%=movies.results[i].title%>
+								<% var heart = "fa fa-heart-o" ; %>
+								<%for (var j= 0; j<likedmovies.length; j++) {
+									if(likedmovies[j].title == movies.results[i].original_title) {
+										heart = "fa fa-heart";
+									}
+								}%>
+
+								<a class="like" href="/like?&movie_id=<%=movies.results[i].id%>">
+									<i class="<%=heart%>" aria-hidden="true"></i>
 								</a>
-								<div class="movie-title"><%=movies.results[i].title%>
-									<% var heart = "fa fa-heart-o" ; %>
-									<%for (var j= 0; j<likedmovies.length; j++) {
-										if(likedmovies[j].title == movies.results[i].original_title) {
-											heart = "fa fa-heart";
-										}
-									}%>
 
-									<a class="like" href="/like?&movie_id=<%=movies.results[i].id%>">
-										<i class="<%=heart%>" aria-hidden="true"></i>
-									</a>
-
-								</div>
-								<div class="movie-shopping">5€<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
-								<p class="movie-synopsis"><%=movies.results[i].overview%></p>
 							</div>
-							<% } %>
+							<div class="movie-shopping">5€<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
+							<p class="movie-synopsis"><%=movies.results[i].overview%></p>
+						</div>
+						<% } %>
 
 
-						</div> <!-- .movie-list -->
+					</div> <!-- .movie-list -->
 
-					</div>
-				</div> <!-- .container -->
-			</main>
+				</div>
+			</div> <!-- .container -->
+		</main>
 
-		</div>
-		<!-- Default snippet for navigation -->
+	</div>
+	<!-- Default snippet for navigation -->
 
 
-		<script src="js/jquery-1.11.1.min.js"></script>
-		<script src="js/plugins.js"></script>
-		<script src="js/app.js"></script>
-		<script src="js/main.js"></script>
+	<script src="js/jquery-1.11.1.min.js"></script>
+	<script src="js/plugins.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/main.js"></script>
 
-	</body>
+</body>
 
-	</html>
+</html>
