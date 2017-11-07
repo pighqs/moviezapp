@@ -1,0 +1,34 @@
+        <header class="site-header">
+            <div class="container">
+                <a href="/" id="branding">
+                    <img src="images/logo.png" alt="" class="logo">
+                    <div class="logo-copy">
+                        <h1 class="site-title">Moviz</h1>
+                        <small class="site-description">Manage your best movies</small>
+                    </div>
+                </a> <!-- #branding -->
+
+                <div class="main-navigation">
+                    <button type="button" class="menu-toggle"><i class="fa fa-bars"></i></button>
+                    <ul class="menu">
+                        <li class="menu-item  current-menu-item"><a href="/">Last releases</a></li>
+                        <li class="menu-item"><a href="review">My movies</a></li>
+                        <li class="menu-item"><a href="contact">Contact</a></li>
+                            <!--
+                            <li class="menu-item"><a href="signup.ejs">Sign up</a></li>
+                            <li class="menu-item"><a href="signin.ejs">Sign in</a></li>
+                            <li class="menu-item"><a href="signout.ejs">Sign out</a></li>
+                        -->
+                    </ul> <!-- .menu -->
+
+                    <form action="/search" class="search-form">
+                        <input class="active" id="search" placeholder="Search..." type="text" name="movieSearch">
+                        <button class="search-btn"><i class="fa fa-search"></i></button>
+                    </form> <!-- .menu -->
+
+
+                </div> <!-- .main-navigation -->
+
+                <div class="mobile-navigation"></div>
+            </div>
+        </header>

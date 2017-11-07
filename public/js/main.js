@@ -7,10 +7,8 @@ window.onload = function() {
         });
     });
 
-    var loupe = document.querySelector(".fa-search");
-
-    loupe.addEventListener('click', function(e) {
-        console.log("je suis dans le click");
+    var buttonSearch = document.querySelector(".search-btn");
+    buttonSearch.addEventListener('click', function(e) {
         var searchInputVal = document.getElementById("search").value;
         console.log(searchInputVal);
         if (searchInputVal == "" || searchInputVal == undefined) {
