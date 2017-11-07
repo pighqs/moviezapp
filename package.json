@@ -14,5 +14,13 @@
     "mongoose ": " ^ 4.13 .0 "
   },
   "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pighqs/moviezapp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pighqs/moviezapp/issues"
+  },
+  "homepage": "https://github.com/pighqs/moviezapp#readme",
   "description": ""
 }
