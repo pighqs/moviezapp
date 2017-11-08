@@ -136,7 +136,7 @@ app.get('/single', function(req, res) {
         var body = JSON.parse(body);
         request(creditsURL, function(error, response, credits) {
             var credits = JSON.parse(credits);
-            res.render('single', { body, credits });
+            res.render('single', { body, credits, page: "single" });
 
         });
     });
@@ -151,7 +151,7 @@ app.get('/search', function(req, res) {
         var movies = JSON.parse(searchResults);
 
         MovieModel.find(function(err, likedmovies) {
-            res.render('home', { movies, likedmovies });
+            res.render('home', { movies, likedmovies, page: "search" });
         })
     });
 });
