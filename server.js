@@ -58,16 +58,18 @@ app.get('/', function(req, res) {
             movies = JSON.parse(body);
 
             // on appelle la collection movies (films enregistrés dans db)
-            MovieModel.find(function(err, likedmovies) {
-                res.render('home', { movies, likedmovies });
+            var query = MovieModel.find();
+            query.exec(function(error, datas) {
+                res.render('home', { movies, likedmovies: datas });
             })
 
+            // MovieModel.find(function(err, likedmovies) {
+            //     res.render('home', { movies, likedmovies });
+            // })
 
-            // on insere cette variable dans le tableau cityList qui est lu par le front
         } else {
             console.log('statusCode:', response && response.statusCode);
         }
-
     });
 });
 
@@ -100,8 +102,9 @@ app.get('/like', function(req, res) {
 
                 // on insere dans la base de donnees
                 newMovie.save(function(error, movie) {
-                    MovieModel.find(function(err, likedMovies) {
-                        res.render('review', { movies: likedMovies });
+                    var query = MovieModel.find();
+                    query.exec(function(error, datas) {
+                        res.render('review', { movies: datas });
                     })
                 });
 
@@ -126,8 +129,9 @@ app.get('/unlike', function(req, res) {
 });
 
 app.get('/review', function(req, res) {
-    MovieModel.find(function(err, movies) {
-        res.render('review', { movies: movies });
+    var query = MovieModel.find();
+    query.exec(function(error, datas) {
+        res.render('review', { movies: datas });
     })
 });
 
