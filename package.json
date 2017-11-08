@@ -2,8 +2,8 @@
   "name": "moviezapp",
   "version": "1.0.0",
   "engines": {
-    "node": "8.7.0",
-  }
+    "node": "8.7.0"
+  },
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
