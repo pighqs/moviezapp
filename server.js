@@ -1,4 +1,4 @@
-//PACKAGES
+//////// PACKAGES
 var express = require('express');
 // on stocke l'app express dans une variable app : initialisation
 var app = express();
@@ -9,19 +9,25 @@ app.set('view engine', 'ejs');
 // Request is designed to make http calls. It supports HTTPS and follows redirects by default.
 var request = require('request');
 
+// SESSION
+var session = require("express-session");
+
+app.use(
+    session({
+        secret: 'a4f8071f-c873-4447-8ee2',
+        resave: false,
+        saveUninitialized: false,
+    })
+);
+
 
 // BASE DE DONNEES
-//var mongoose = require('mongoose');
-// pour empêcher erreur si base de donnees met trop longtemps a repondre
-//var options = { server: { socketOptions: { connectTimeoutMS: 30000 } } };
 
 var movies = [];
 var apiKey = "3b0ada6d415a01999b9b2da681c2829f";
 var sort = "popularity.desc";
 var lang = "fr-FR";
 
-
-// BASE DE DONNEES
 var mongoose = require('mongoose');
 // pour empêcher erreur si base de donnees met trop longtemps a repondre
 var options = { server: { socketOptions: { connectTimeoutMS: 30000 } } };
@@ -34,7 +40,7 @@ mongoose.connect('mongodb://moviez:moviez@ds249005.mlab.com:49005/moviez', optio
     }
 });
 
-// SCHEMA
+// schemas
 var movieSchema = mongoose.Schema({
     movieID: Number,
     title: String,
@@ -42,11 +48,21 @@ var movieSchema = mongoose.Schema({
     overview: String
 });
 
-// MODEL
-var MovieModel = mongoose.model('movies', movieSchema);
+var userSchema = mongoose.Schema({
+    userID: String,
+    userPassword: String
+});
 
-// ROUTES
+
+// models
+var MovieModel = mongoose.model('movies', movieSchema);
+var UserModel = mongoose.model('users', userSchema);
+
+
+//////// ROUTES
 app.get('/', function(req, res) {
+    var utilisateur = req.session.userID;
+    console.log(utilisateur);
 
     var moviesDiscoverURL = "https://api.themoviedb.org/3/discover/movie?api_key=" + apiKey + "&language=" + lang + "&sort_by=" + sort + "&include_adult=true&include_video=false&page=1";
 
@@ -105,7 +121,7 @@ app.get('/like', function(req, res) {
             }
 
         });
-    };
+    }
 });
 
 app.get('/unlike', function(req, res) {
@@ -121,7 +137,7 @@ app.get('/review', function(req, res) {
     var query = MovieModel.find();
     query.exec(function(error, datas) {
         res.render('review', { movies: datas, page: "review" });
-    })
+    });
 });
 
 
@@ -152,14 +168,45 @@ app.get('/search', function(req, res) {
 
         MovieModel.find(function(err, likedmovies) {
             res.render('home', { movies, likedmovies, page: "search" });
-        })
+        });
     });
 });
 
+app.get('/signupForm', function(req, res) {
+    res.render('signupForm', { page: "sign" });
+});
+
+app.get('/signup', function(req, res) {
+    // on récupère les infos de body pour assigner une nouvelle variable newCity
+    var newUser = new UserModel({
+        userID: req.query.email,
+        userPassword: req.query.password
+    });
 
 
+    // on insere dans la base de donnees
+    newUser.save(function(error, user) {
+        req.session.userID = user._id;
+        res.redirect("/");
+    });
 
-//LISTEN
+    //on redirige sur la home
+
+});
+
+app.get('/signin', function(req, res) {
+    res.render('signin', { page: "sign" });
+
+});
+
+
+app.get('/signout', function(req, res) {
+    res.render('signout', { page: "sign" });
+
+});
+
+
+//////// LISTEN
 // process.env.PORT est le port attribué par hénergeur
 var port = (process.env.PORT || 8080);
 app.listen(port, function() {

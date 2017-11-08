@@ -12,10 +12,13 @@
                     <button type="button" class="menu-toggle"><i class="fa fa-bars"></i></button>
                     <ul class="menu">
 
-                        <% if (page === 'search' || page === 'single') { %>
+                        <% if (page === 'search' || page === 'single' || page === 'sign' || page == undefined) { %>
                         <li class="menu-item"><a href="/">Last releases</a></li>
                         <li class="menu-item"><a href="review">My movies</a></li>
                         <li class="menu-item"><a href="contact">Contact</a></li>
+                        <li class="menu-item"><a href="signupForm">Sign up</a></li>
+                        <li class="menu-item"><a href="signin">Sign in</a></li>
+                        <li class="menu-item"><a href="signout">Sign out</a></li>
 
                         <% } else {%>
 
@@ -26,14 +29,15 @@
                             <li <% if (page === 'contact') { %> class="menu-item current-menu-item" <%
                                 } else { %> class="menu-item" <% } %> ><a href="contact">Contact</a></li>
 
+                            <li class="menu-item"><a href="signupForm">Sign up</a></li>
+                            <li class="menu-item"><a href="signin">Sign in</a></li>
+                            <li class="menu-item"><a href="signout">Sign out</a></li>
+
                          <%}%>
 
 
-                            <!--
-                            <li class="menu-item"><a href="signup.ejs">Sign up</a></li>
-                            <li class="menu-item"><a href="signin.ejs">Sign in</a></li>
-                            <li class="menu-item"><a href="signout.ejs">Sign out</a></li>
-                        -->
+
+
                     </ul> <!-- .menu -->
 
                     <form action="/search" class="search-form">
