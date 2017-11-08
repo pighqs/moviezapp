@@ -160,7 +160,8 @@ app.get('/search', function(req, res) {
 
 
 //LISTEN
+// process.env.PORT est le port attribué par hénergeur
 var port = (process.env.PORT || 8080);
 app.listen(port, function() {
-    console.log("server listening on port 8080");
+    console.log("server listening on port: " + port);
 });
