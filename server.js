@@ -63,9 +63,6 @@ app.get('/', function(req, res) {
                 res.render('home', { movies, likedmovies: datas });
             })
 
-            // MovieModel.find(function(err, likedmovies) {
-            //     res.render('home', { movies, likedmovies });
-            // })
 
         } else {
             console.log('statusCode:', response && response.statusCode);
@@ -76,12 +73,11 @@ app.get('/', function(req, res) {
 
 
 app.get('/like', function(req, res) {
-    if (req.query.movie_id && req.query.movie_id != "") {
-
-        var likedMovieID = req.query.movie_id;
+    if (req.query.movieID && req.query.movieID != "") {
+        var movieID = req.query.movieID;
 
         //la ville demandée en url via le formulaire à openweathermap est stockée dans une variable
-        var movieURL = "https://api.themoviedb.org/3/movie/" + likedMovieID + "?api_key=" + apiKey + "&language=" + lang;
+        var movieURL = "https://api.themoviedb.org/3/movie/" + movieID + "?api_key=" + apiKey + "&language=" + lang;
 
         request(movieURL, function(error, response, body) {
             // seulement si la réponse n'est pas 404 ()
@@ -98,15 +94,11 @@ app.get('/like', function(req, res) {
                     overview: body.overview
                 });
 
-                //console.log(newMovie);
 
                 // on insere dans la base de donnees
-                newMovie.save(function(error, movie) {
-                    var query = MovieModel.find();
-                    query.exec(function(error, datas) {
-                        res.render('review', { movies: datas });
-                    })
-                });
+                newMovie.save(function(error, movie) {});
+                //on redirige sur la home
+                res.redirect("/");
 
             } else {
                 console.log('statusCode:', response && response.statusCode);
@@ -119,11 +111,8 @@ app.get('/like', function(req, res) {
 app.get('/unlike', function(req, res) {
     // recupere ID unique envoyé en requête et supprime entrée correspondante dans la base de données
     MovieModel.remove({ movieID: req.query.movieID }, function(error, ville) {
-        //console.log(error);
-        MovieModel.find(function(err, likedMovies) {
-            // la collection retournée est utilisée pour le render
-            res.render('review', { movies: likedMovies });
-        });
+        //on redirige sur la home
+        res.redirect("/");
     });
 
 });
@@ -137,11 +126,11 @@ app.get('/review', function(req, res) {
 
 
 app.get('/single', function(req, res) {
-    var singleMovieID = req.query.movie_id;
+    var movieID = req.query.movieID;
 
     //la ville demandée en url via le formulaire à openweathermap est stockée dans une variable
-    var movieURL = "https://api.themoviedb.org/3/movie/" + singleMovieID + "?api_key=" + apiKey + "&language=" + lang;
-    var creditsURL = "https://api.themoviedb.org/3/movie/" + singleMovieID + "/credits?api_key=" + apiKey;
+    var movieURL = "https://api.themoviedb.org/3/movie/" + movieID + "?api_key=" + apiKey + "&language=" + lang;
+    var creditsURL = "https://api.themoviedb.org/3/movie/" + movieID + "/credits?api_key=" + apiKey;
 
     request(movieURL, function(error, response, body) {
         var body = JSON.parse(body);

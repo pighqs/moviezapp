@@ -6,7 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
 
-	<title>Movie Review | Review</title>
+	<title>Movie Review | Home</title>
 
 	<!-- Loading third party fonts -->
 	<link href="http://fonts.googleapis.com/css?family=Roboto:300,400,700|" rel="stylesheet" type="text/css">
@@ -39,7 +39,7 @@
 						<!-- on boucle sur chaque film retourné par le webservice  en mode "discover"-->
 						<% for(var i=0; i<movies.results.length; i++) { %>
 						<div class="movie">
-							<a href="/single?&movie_id=<%=movies.results[i].id%>">
+							<a href="/single?&movieID=<%=movies.results[i].id%>">
 								<figure class="movie-poster">
 									<img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt="">
 								</figure>
@@ -59,7 +59,7 @@
 								</a>
 								<% } else { %>
 
-								<a class="like" href="/like?&movie_id=<%=movies.results[i].id%>">
+								<a class="like" href="/like?&movieID=<%=movies.results[i].id%>">
 									<i class="fa fa-heart-o" aria-hidden="true"></i>
 								</a>
 								<%}%>
