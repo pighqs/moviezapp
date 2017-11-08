@@ -60,7 +60,7 @@ app.get('/', function(req, res) {
             // on appelle la collection movies (films enregistrés dans db)
             var query = MovieModel.find();
             query.exec(function(error, datas) {
-                res.render('home', { movies, likedmovies: datas });
+                res.render('home', { movies, likedmovies: datas, page: "home" });
             })
 
 
@@ -120,7 +120,7 @@ app.get('/unlike', function(req, res) {
 app.get('/review', function(req, res) {
     var query = MovieModel.find();
     query.exec(function(error, datas) {
-        res.render('review', { movies: datas });
+        res.render('review', { movies: datas, page: "review" });
     })
 });
 
