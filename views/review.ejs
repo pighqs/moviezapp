@@ -42,7 +42,9 @@
 						<div class="movie">
 							<figure class="movie-poster"><img src="https://image.tmdb.org/t/p/w500/<%=movies[i].posterpath%>" alt=""></figure>
 							<div class="movie-title"><%=movies[i].title%>
-								<a class="like" href="/unlike?&movie_id=<%=movies[i]._id%>">
+								<a class="like" href="/unlike?&movieID=<%=movies[i].movieID%>">
+
+									<%console.log(movies[i].movieID)%>
 									<i class="fa fa-heart" aria-hidden="true"></i>
 								</a>
 							</div>

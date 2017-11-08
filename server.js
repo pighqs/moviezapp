@@ -36,10 +36,10 @@ mongoose.connect('mongodb://moviez:moviez@ds249005.mlab.com:49005/moviez', optio
 
 // SCHEMA
 var movieSchema = mongoose.Schema({
+    movieID: Number,
     title: String,
     posterpath: String,
     overview: String
-
 });
 
 // MODEL
@@ -90,10 +90,10 @@ app.get('/like', function(req, res) {
 
                 // on récupère les infos de body pour assigner une nouvelle variable newCity
                 var newMovie = new MovieModel({
+                    movieID: body.id,
                     title: body.original_title,
                     posterpath: body.poster_path,
                     overview: body.overview
-
                 });
 
                 //console.log(newMovie);
@@ -115,7 +115,7 @@ app.get('/like', function(req, res) {
 
 app.get('/unlike', function(req, res) {
     // recupere ID unique envoyé en requête et supprime entrée correspondante dans la base de données
-    MovieModel.remove({ _id: req.query.movie_id }, function(error, ville) {
+    MovieModel.remove({ movieID: req.query.movieID }, function(error, ville) {
         //console.log(error);
         MovieModel.find(function(err, likedMovies) {
             // la collection retournée est utilisée pour le render
