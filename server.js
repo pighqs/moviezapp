@@ -7,6 +7,15 @@ app.use(express.static('public'));
 
 app.set('view engine', 'ejs');
 // Request is designed to make http calls. It supports HTTPS and follows redirects by default.
+
+var bodyParser = require('body-parser');
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
+
 var request = require('request');
 
 // SESSION
@@ -45,11 +54,12 @@ var movieSchema = mongoose.Schema({
     movieID: Number,
     title: String,
     posterpath: String,
-    overview: String
+    overview: String,
+    likeByUser: String
 });
 
 var userSchema = mongoose.Schema({
-    userID: String,
+    userEmail: String,
     userPassword: String
 });
 
@@ -61,8 +71,10 @@ var UserModel = mongoose.model('users', userSchema);
 
 //////// ROUTES
 app.get('/', function(req, res) {
-    var utilisateur = req.session.userID;
-    console.log(utilisateur);
+
+    console.log("logged ? " + req.session.islogged);
+
+    var isUserLog = req.session.islogged;
 
     var moviesDiscoverURL = "https://api.themoviedb.org/3/discover/movie?api_key=" + apiKey + "&language=" + lang + "&sort_by=" + sort + "&include_adult=true&include_video=false&page=1";
 
@@ -76,7 +88,7 @@ app.get('/', function(req, res) {
             // on appelle la collection movies (films enregistrés dans db)
             var query = MovieModel.find();
             query.exec(function(error, datas) {
-                res.render('home', { movies, likedmovies: datas, page: "home" });
+                res.render('home', { movies, likedmovies: datas, page: "home", isUserLog });
             })
 
 
@@ -89,44 +101,47 @@ app.get('/', function(req, res) {
 
 
 app.get('/like', function(req, res) {
-    if (req.query.movieID && req.query.movieID != "") {
-        var movieID = req.query.movieID;
+    if (req.session.islogged == true) {
+        if (req.query.movieID && req.query.movieID != "") {
+            var movieID = req.query.movieID;
 
-        //la ville demandée en url via le formulaire à openweathermap est stockée dans une variable
-        var movieURL = "https://api.themoviedb.org/3/movie/" + movieID + "?api_key=" + apiKey + "&language=" + lang;
+            //la ville demandée en url via le formulaire à openweathermap est stockée dans une variable
+            var movieURL = "https://api.themoviedb.org/3/movie/" + movieID + "?api_key=" + apiKey + "&language=" + lang;
 
-        request(movieURL, function(error, response, body) {
-            // seulement si la réponse n'est pas 404 ()
-            if (response.statusCode !== 404) {
+            request(movieURL, function(error, response, body) {
+                // seulement si la réponse n'est pas 404 ()
+                if (response.statusCode !== 404) {
 
-                // la requête nous renvoie les infos qui seront stockées au format JSON dans une variable "body":
-                var body = JSON.parse(body);
+                    // la requête nous renvoie les infos qui seront stockées au format JSON dans une variable "body":
+                    var body = JSON.parse(body);
 
-                // on récupère les infos de body pour assigner une nouvelle variable newCity
-                var newMovie = new MovieModel({
-                    movieID: body.id,
-                    title: body.original_title,
-                    posterpath: body.poster_path,
-                    overview: body.overview
-                });
+                    // on récupère les infos de body pour assigner une nouvelle variable newCity
+                    var newMovie = new MovieModel({
+                        movieID: body.id,
+                        title: body.original_title,
+                        posterpath: body.poster_path,
+                        overview: body.overview,
+                        likeByUser: req.session.userID
+                    });
 
 
-                // on insere dans la base de donnees
-                newMovie.save(function(error, movie) {});
-                //on redirige sur la home
-                res.redirect("/");
+                    // on insere dans la base de donnees
+                    newMovie.save(function(error, movie) {});
+                    //on redirige sur la home
+                    res.redirect("/");
 
-            } else {
-                console.log('statusCode:', response && response.statusCode);
-            }
+                } else {
+                    console.log('statusCode:', response && response.statusCode);
+                }
 
-        });
+            });
+        }
     }
 });
 
 app.get('/unlike', function(req, res) {
     // recupere ID unique envoyé en requête et supprime entrée correspondante dans la base de données
-    MovieModel.remove({ movieID: req.query.movieID }, function(error, ville) {
+    MovieModel.remove({ movieID: req.query.movieID, likeByUser: req.session.userID }, function(error, ville) {
         //on redirige sur la home
         res.redirect("/");
     });
@@ -134,10 +149,14 @@ app.get('/unlike', function(req, res) {
 });
 
 app.get('/review', function(req, res) {
-    var query = MovieModel.find();
-    query.exec(function(error, datas) {
-        res.render('review', { movies: datas, page: "review" });
-    });
+    if (req.session.islogged == true) {
+        var query = MovieModel.find({ likeByUser: req.session.userID });
+        query.exec(function(error, datas) {
+            res.render('review', { movies: datas, page: "review" });
+        });
+    } else {
+        res.redirect("/signin");
+    }
 });
 
 
@@ -172,26 +191,26 @@ app.get('/search', function(req, res) {
     });
 });
 
-app.get('/signupForm', function(req, res) {
-    res.render('signupForm', { page: "sign" });
+app.get('/signup', function(req, res) {
+    res.render('signup', { page: "sign" });
 });
 
-app.get('/signup', function(req, res) {
+app.post('/signup', function(req, res) {
     // on récupère les infos de body pour assigner une nouvelle variable newCity
     var newUser = new UserModel({
-        userID: req.query.email,
-        userPassword: req.query.password
+        userEmail: req.body.email,
+        userPassword: req.body.password
     });
 
 
     // on insere dans la base de donnees
     newUser.save(function(error, user) {
+        // on enregistre l'id déterminé par la DB en id de session
         req.session.userID = user._id;
+        req.session.islogged = true;
+        //on redirige sur la home
         res.redirect("/");
     });
-
-    //on redirige sur la home
-
 });
 
 app.get('/signin', function(req, res) {
@@ -199,12 +218,27 @@ app.get('/signin', function(req, res) {
 
 });
 
-
-app.get('/signout', function(req, res) {
-    res.render('signout', { page: "sign" });
+app.post('/signin', function(req, res) {
+    // on vérifie dans la DB que le mail et le mot de passe
+    var query = UserModel.find();
+    query.exec(function(error, users) {
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].userEmail == req.body.email && users[i].userPassword == req.body.password) {
+                console.log("user exist, log OK");
+                req.session.islogged = true;
+                req.session.userID = users[0]._id;
+            }
+        }
+        res.redirect("/");
+    });
 
 });
 
+
+app.get('/signout', function(req, res) {
+    req.session.islogged = false;
+    res.redirect("/");
+});
 
 //////// LISTEN
 // process.env.PORT est le port attribué par hénergeur

@@ -37,8 +37,43 @@
 
 					<div class="movie-list">
 						<!-- on boucle sur chaque film retourné par le webservice  en mode "discover"-->
-						<% for(var i=0; i<movies.results.length; i++) { %>
-						<div class="movie">
+						<% if(isUserLog == true) {
+							for(var i=0; i<movies.results.length; i++) { %>
+							<div class="movie">
+								<a href="/single?&movieID=<%=movies.results[i].id%>">
+									<figure class="movie-poster">
+										<img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt="">
+									</figure>
+								</a>
+								<div class="movie-title"><%=movies.results[i].title%>
+									<!-- pour chaque film , on boucle sur les films dans le DB pour vérifier si ils existent" -->
+									<% var isLike = false; %>
+									<% for (var j= 0; j<likedmovies.length; j++) {
+										if(likedmovies[j].movieID == movies.results[i].id) {
+											isLike = true;
+										}
+									} %>
+
+									<% if (isLike == true) { %>
+									<a class="like" href="/unlike?&movieID=<%=movies.results[i].id%>">
+										<i class="fa fa-heart" aria-hidden="true"></i>
+									</a>
+									<% } else { %>
+
+									<a class="like" href="/like?&movieID=<%=movies.results[i].id%>">
+										<i class="fa fa-heart-o" aria-hidden="true"></i>
+									</a>
+									<%}%>
+
+								</div>
+								<div class="movie-shopping">5€<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
+								<p class="movie-synopsis"><%=movies.results[i].overview%></p>
+							</div>
+							<% }
+						} else if (isUserLog == false || isUserLog == undefined) {
+
+							for(var i=0; i<movies.results.length; i++) { %>
+							<div class="movie">
 							<a href="/single?&movieID=<%=movies.results[i].id%>">
 								<figure class="movie-poster">
 									<img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt="">
@@ -46,42 +81,34 @@
 							</a>
 							<div class="movie-title"><%=movies.results[i].title%>
 								<!-- pour chaque film , on boucle sur les films dans le DB pour vérifier si ils existent" -->
-								<% var isLike = false; %>
-								<% for (var j= 0; j<likedmovies.length; j++) {
-									if(likedmovies[j].movieID == movies.results[i].id) {
-										isLike = true;
-									}
-								} %>
 
-								<% if (isLike == true) { %>
-								<a class="like" href="/unlike?&movieID=<%=movies.results[i].id%>">
-									<i class="fa fa-heart" aria-hidden="true"></i>
-								</a>
-								<% } else { %>
-
-								<a class="like" href="/like?&movieID=<%=movies.results[i].id%>">
+								<a class="like" href="/">
 									<i class="fa fa-heart-o" aria-hidden="true"></i>
 								</a>
-								<%}%>
+
 
 							</div>
 							<div class="movie-shopping">5€<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
 							<p class="movie-synopsis"><%=movies.results[i].overview%></p>
 						</div>
-						<% } %>
+						<% }
+					}%>
 
 
-					</div> <!-- .movie-list -->
-
-				</div>
-			</div> <!-- .container -->
-		</main>
-
-	</div>
-	<!-- Default snippet for navigation -->
 
 
-	<%- include("partials/jslibs.ejs"); %>
+
+				</div> <!-- .movie-list -->
+
+			</div>
+		</div> <!-- .container -->
+	</main>
+
+</div>
+<!-- Default snippet for navigation -->
+
+
+<%- include("partials/jslibs.ejs"); %>
 
 </body>
 
