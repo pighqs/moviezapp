@@ -70,6 +70,8 @@
 								<p class="movie-synopsis"><%=movies.results[i].overview%></p>
 							</div>
 							<% }
+
+							// si le user n'est pas loggé :
 						} else if (isUserLog == false || isUserLog == undefined) {
 
 							for(var i=0; i<movies.results.length; i++) { %>
@@ -80,9 +82,9 @@
 								</figure>
 							</a>
 							<div class="movie-title"><%=movies.results[i].title%>
-								<!-- pour chaque film , on boucle sur les films dans le DB pour vérifier si ils existent" -->
 
-								<a class="like" href="/">
+								<!-- le bouton like renvoie vers le signin -->
+								<a class="like pleaseLog" href="/signup">
 									<i class="fa fa-heart-o" aria-hidden="true"></i>
 								</a>
 

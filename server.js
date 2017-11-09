@@ -34,7 +34,7 @@ app.use(
 
 var movies = [];
 var apiKey = "3b0ada6d415a01999b9b2da681c2829f";
-var sort = "popularity.desc";
+var sort = "vote_count.desc";
 var lang = "fr-FR";
 
 var mongoose = require('mongoose');
@@ -74,28 +74,22 @@ app.get('/', function(req, res) {
 
     console.log("logged ? " + req.session.islogged);
 
-    var isUserLog = req.session.islogged;
 
     var moviesDiscoverURL = "https://api.themoviedb.org/3/discover/movie?api_key=" + apiKey + "&language=" + lang + "&sort_by=" + sort + "&include_adult=true&include_video=false&page=1";
 
     request(moviesDiscoverURL, function(error, response, body) {
-        // seulement si la réponse n'est pas 404 ()
-        if (response.statusCode !== 404) {
 
-            // la requête nous renvoie les infos qui seront stockées au format JSON dans une variable "body":
-            movies = JSON.parse(body);
+        // la requête nous renvoie les infos qui seront stockées au format JSON dans une variable "body":
+        movies = JSON.parse(body);
 
-            // on appelle la collection movies (films enregistrés dans db)
-            var query = MovieModel.find();
-            query.exec(function(error, datas) {
-                res.render('home', { movies, likedmovies: datas, page: "home", isUserLog });
-            })
+        // on appelle la collection movies (films enregistrés dans db), mais uniquement ceux qui ont même id que user
+        var query = MovieModel.find({ likeByUser: req.session.userID });
+        query.exec(function(error, datas) {
+            res.render('home', { movies, likedmovies: datas, page: "home", isUserLog: req.session.islogged });
+        });
 
-
-        } else {
-            console.log('statusCode:', response && response.statusCode);
-        }
     });
+
 });
 
 
@@ -135,7 +129,11 @@ app.get('/like', function(req, res) {
                 }
 
             });
+
         }
+
+    } else if (req.session.islogged == false || req.session.islogged == undefined) {
+        res.redirect("/signup");
     }
 });
 
@@ -152,7 +150,7 @@ app.get('/review', function(req, res) {
     if (req.session.islogged == true) {
         var query = MovieModel.find({ likeByUser: req.session.userID });
         query.exec(function(error, datas) {
-            res.render('review', { movies: datas, page: "review" });
+            res.render('review', { movies: datas, page: "review", isUserLog: req.session.islogged });
         });
     } else {
         res.redirect("/signin");
@@ -171,7 +169,7 @@ app.get('/single', function(req, res) {
         var body = JSON.parse(body);
         request(creditsURL, function(error, response, credits) {
             var credits = JSON.parse(credits);
-            res.render('single', { body, credits, page: "single" });
+            res.render('single', { body, credits, page: "single", isUserLog: req.session.islogged });
 
         });
     });
@@ -186,13 +184,13 @@ app.get('/search', function(req, res) {
         var movies = JSON.parse(searchResults);
 
         MovieModel.find(function(err, likedmovies) {
-            res.render('home', { movies, likedmovies, page: "search" });
+            res.render('home', { movies, likedmovies, page: "search", isUserLog: req.session.islogged });
         });
     });
 });
 
 app.get('/signup', function(req, res) {
-    res.render('signup', { page: "sign" });
+    res.render('signup', { page: "sign", isUserLog: req.session.islogged });
 });
 
 app.post('/signup', function(req, res) {
@@ -214,24 +212,30 @@ app.post('/signup', function(req, res) {
 });
 
 app.get('/signin', function(req, res) {
-    res.render('signin', { page: "sign" });
+    res.render('signin', { page: "sign", isUserLog: req.session.islogged });
 
 });
 
 app.post('/signin', function(req, res) {
-    // on vérifie dans la DB que le mail et le mot de passe
-    var query = UserModel.find();
-    query.exec(function(error, users) {
-        for (var i = 0; i < users.length; i++) {
-            if (users[i].userEmail == req.body.email && users[i].userPassword == req.body.password) {
-                console.log("user exist, log OK");
+
+    var query = UserModel.findOne({ userEmail: req.body.email });
+    query.exec(function(error, user) {
+        if (user == undefined) {
+            console.log("user mail doesn't exist");
+            res.redirect("/signup");
+        } else {
+            if (user.userPassword == req.body.password) {
+                console.log("user and password OK");
                 req.session.islogged = true;
-                req.session.userID = users[0]._id;
+                req.session.userID = user._id;
+                res.redirect("/");
+            } else {
+                console.log("wrong password");
+                res.redirect("/signin");
             }
         }
-        res.redirect("/");
-    });
 
+    });
 });
 
 

@@ -10,4 +10,13 @@ window.onload = function() {
             e.preventDefault();
         }
     }, false);
+
+    var likeIfNotLog = document.querySelectorAll(".pleaseLog");
+    for (var i = 0; i < likeIfNotLog.length; i++) {
+        likeIfNotLog[i].addEventListener("mouseover", function(event) {
+            // met en surbrillance la cible de mouseover
+            console.log(this.children[0].classList.value = "fa fa-sign-in");
+        });
+
+    }
 }
