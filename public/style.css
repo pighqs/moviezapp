@@ -264,6 +264,7 @@ table {
 
 
 
+
 /*
  * Global Styles
  */
@@ -333,6 +334,7 @@ form select {
 form textarea {
     resize: vertical;
 }
+
 
 
 
@@ -573,6 +575,7 @@ ul.arrow li a {
 ul.arrow li a:hover {
     color: #ffaa3c;
 }
+
 
 
 
@@ -2021,6 +2024,7 @@ all and (min-device-pixel-ratio: 1.5) {
 
 
 
+
 /*
  * Header Styles
  */
@@ -2461,6 +2465,7 @@ all and (min-device-pixel-ratio: 1.5) {
 
 
 
+
 /*
  * Footer Styles
  */
@@ -2509,4 +2514,8 @@ all and (min-device-pixel-ratio: 1.5) {
 
 .site-footer .colophon {
     padding-top: 30px;
+}
+
+.alert {
+    color: #ffaa3c;
 }

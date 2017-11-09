@@ -190,29 +190,40 @@ app.get('/search', function(req, res) {
 });
 
 app.get('/signup', function(req, res) {
-    res.render('signup', { page: "sign", isUserLog: req.session.islogged });
+    res.render('signup', { page: "sign", isUserLog: req.session.islogged, alert: "please Sign UP" });
 });
 
 app.post('/signup', function(req, res) {
-    // on récupère les infos de body pour assigner une nouvelle variable newCity
-    var newUser = new UserModel({
-        userEmail: req.body.email,
-        userPassword: req.body.password
+
+    var query = UserModel.findOne({ userEmail: req.body.email });
+    query.exec(function(error, user) {
+        if (user == undefined) {
+            // on récupère les infos de body pour assigner une nouvelle variable newCity
+            var newUser = new UserModel({
+                userEmail: req.body.email,
+                userPassword: req.body.password
+            });
+
+            // on insere dans la base de donnees
+            newUser.save(function(error, user) {
+                // on enregistre l'id déterminé par la DB en id de session
+                req.session.userID = user._id;
+                req.session.islogged = true;
+                //on redirige sur la home
+                res.redirect("/");
+            });
+
+        } else {
+            console.log("user already exist");
+            res.render('signup', { page: "sign", isUserLog: req.session.islogged, alert: "user already exist" });
+        }
+
     });
 
-
-    // on insere dans la base de donnees
-    newUser.save(function(error, user) {
-        // on enregistre l'id déterminé par la DB en id de session
-        req.session.userID = user._id;
-        req.session.islogged = true;
-        //on redirige sur la home
-        res.redirect("/");
-    });
 });
 
 app.get('/signin', function(req, res) {
-    res.render('signin', { page: "sign", isUserLog: req.session.islogged });
+    res.render('signin', { page: "sign", isUserLog: req.session.islogged, alert: "please Sign IN" });
 
 });
 
@@ -222,7 +233,7 @@ app.post('/signin', function(req, res) {
     query.exec(function(error, user) {
         if (user == undefined) {
             console.log("user mail doesn't exist");
-            res.redirect("/signup");
+            res.render('signin', { page: "sign", isUserLog: req.session.islogged, alert: "user unknown" });
         } else {
             if (user.userPassword == req.body.password) {
                 console.log("user and password OK");
@@ -231,7 +242,7 @@ app.post('/signin', function(req, res) {
                 res.redirect("/");
             } else {
                 console.log("wrong password");
-                res.redirect("/signin");
+                res.render('signin', { page: "sign", isUserLog: req.session.islogged, alert: "wrong password" });
             }
         }
 
@@ -242,6 +253,11 @@ app.post('/signin', function(req, res) {
 app.get('/signout', function(req, res) {
     req.session.islogged = false;
     res.redirect("/");
+});
+
+app.get('/contact', function(req, res) {
+    res.render('contact', { page: "contact", isUserLog: req.session.islogged });
+
 });
 
 //////// LISTEN
