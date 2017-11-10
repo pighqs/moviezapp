@@ -12,6 +12,10 @@
 	<link href="http://fonts.googleapis.com/css?family=Roboto:300,400,700|" rel="stylesheet" type="text/css">
 	<link href="fonts/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+	<!-- STRIPE PAYMENT -->
+	<script src="https://checkout.stripe.com/checkout.js"></script>
+
+
 	<!-- Loading main css file -->
 	<link rel="stylesheet" href="style.css">
 
@@ -66,23 +70,14 @@
 									<%}%>
 
 								</div>
+
 								<div class="movie-shopping">5€
+									<i class="fa fa-shopping-cart" aria-hidden="true"></i>
+									<!-- <form action="/pay" method="POST"> -->
+										<button class="pay-btn" id="customButton" data-title="<%=movies.results[i].title%>" >buy</button>
+									<!-- </form> -->
+								</div>
 
-									<form action="/pay" method="POST">
-										<script
-										src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-										data-key="pk_test_jgs8oU31vZyptK58OorgY48E"
-										data-amount="500"
-										data-name="Demo Site"
-										data-description="Widget"
-										data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-										data-locale="auto"
-										data-zip-code="true"
-										data-currency="eur">
-									</script>
-								</form>
-
-								<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
 
 								<p class="movie-synopsis"><%=movies.results[i].overview%></p>
 							</div>

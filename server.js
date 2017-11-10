@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 var request = require('request');
 
 // module stripe pour les paiements
-const stripe = require("stripe")("sk_test_IoTOHpFg6GZ05nSAPpzkhYMp");
+var stripe = require("stripe")("sk_test_IoTOHpFg6GZ05nSAPpzkhYMp");
 
 // SESSION
 var session = require("express-session");
@@ -263,7 +263,6 @@ app.get('/contact', function(req, res) {
 });
 
 
-
 app.post('/pay', function(req, res) {
     //montant (en centimes)
     var amount = 500;
@@ -276,11 +275,11 @@ app.post('/pay', function(req, res) {
         .then(customer =>
             stripe.charges.create({
                 amount,
-                description: "Sample Charge",
+                description: req.body.titleMovie,
                 currency: "eur",
                 customer: customer.id
             })) // une fois la transaction créée, on fait un render de la page
-        .then(charge => res.redirect('/'));
+        .then(charge => res.send('PAYMENT OK'));
 });
 
 //////// LISTEN
