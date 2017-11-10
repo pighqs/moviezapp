@@ -66,7 +66,24 @@
 									<%}%>
 
 								</div>
-								<div class="movie-shopping">5€<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
+								<div class="movie-shopping">5€
+
+									<form action="/pay" method="POST">
+										<script
+										src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+										data-key="pk_test_jgs8oU31vZyptK58OorgY48E"
+										data-amount="500"
+										data-name="Demo Site"
+										data-description="Widget"
+										data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+										data-locale="auto"
+										data-zip-code="true"
+										data-currency="eur">
+									</script>
+								</form>
+
+								<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
+
 								<p class="movie-synopsis"><%=movies.results[i].overview%></p>
 							</div>
 							<% }
@@ -76,41 +93,41 @@
 
 							for(var i=0; i<movies.results.length; i++) { %>
 							<div class="movie">
-							<a href="/single?&movieID=<%=movies.results[i].id%>">
-								<figure class="movie-poster">
-									<img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt="">
-								</figure>
-							</a>
-							<div class="movie-title"><%=movies.results[i].title%>
-
-								<!-- le bouton like renvoie vers le signin -->
-								<a class="like pleaseLog" href="/signup">
-									<i class="fa fa-heart-o" aria-hidden="true"></i>
+								<a href="/single?&movieID=<%=movies.results[i].id%>">
+									<figure class="movie-poster">
+										<img src="https://image.tmdb.org/t/p/w500/<%=movies.results[i].poster_path%>" alt="">
+									</figure>
 								</a>
+								<div class="movie-title"><%=movies.results[i].title%>
+
+									<!-- le bouton like renvoie vers le signin -->
+									<a class="like pleaseLog" href="/signup">
+										<i class="fa fa-heart-o" aria-hidden="true"></i>
+									</a>
 
 
+								</div>
+								<div class="movie-shopping">5€<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
+								<p class="movie-synopsis"><%=movies.results[i].overview%></p>
 							</div>
-							<div class="movie-shopping">5€<i class="fa fa-shopping-cart" aria-hidden="true"></i></div>
-							<p class="movie-synopsis"><%=movies.results[i].overview%></p>
-						</div>
-						<% }
-					}%>
+							<% }
+						}%>
 
 
 
 
 
-				</div> <!-- .movie-list -->
+					</div> <!-- .movie-list -->
 
-			</div>
-		</div> <!-- .container -->
-	</main>
+				</div>
+			</div> <!-- .container -->
+		</main>
 
-</div>
-<!-- Default snippet for navigation -->
+	</div>
+	<!-- Default snippet for navigation -->
 
 
-<%- include("partials/jslibs.ejs"); %>
+	<%- include("partials/jslibs.ejs"); %>
 
 </body>
 

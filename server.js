@@ -9,14 +9,17 @@ app.set('view engine', 'ejs');
 // Request is designed to make http calls. It supports HTTPS and follows redirects by default.
 
 var bodyParser = require('body-parser');
+// bodyParser permet de gerer les requetes HTTP POST : extrait le corps entier de la requete et le met dans req.body
 
-// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
 
 var request = require('request');
+
+// module stripe pour les paiements
+const stripe = require("stripe")("sk_test_IoTOHpFg6GZ05nSAPpzkhYMp");
 
 // SESSION
 var session = require("express-session");
@@ -107,7 +110,7 @@ app.get('/like', function(req, res) {
                 if (response.statusCode !== 404) {
 
                     // la requête nous renvoie les infos qui seront stockées au format JSON dans une variable "body":
-                    var body = JSON.parse(body);
+                    body = JSON.parse(body);
 
                     // on récupère les infos de body pour assigner une nouvelle variable newCity
                     var newMovie = new MovieModel({
@@ -166,9 +169,9 @@ app.get('/single', function(req, res) {
     var creditsURL = "https://api.themoviedb.org/3/movie/" + movieID + "/credits?api_key=" + apiKey;
 
     request(movieURL, function(error, response, body) {
-        var body = JSON.parse(body);
+        body = JSON.parse(body);
         request(creditsURL, function(error, response, credits) {
-            var credits = JSON.parse(credits);
+            credits = JSON.parse(credits);
             res.render('single', { body, credits, page: "single", isUserLog: req.session.islogged });
 
         });
@@ -181,7 +184,7 @@ app.get('/search', function(req, res) {
     var searchURL = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query=" + recherche;
 
     request(searchURL, function(error, response, searchResults) {
-        var movies = JSON.parse(searchResults);
+        movies = JSON.parse(searchResults);
 
         MovieModel.find(function(err, likedmovies) {
             res.render('home', { movies, likedmovies, page: "search", isUserLog: req.session.islogged });
@@ -190,7 +193,7 @@ app.get('/search', function(req, res) {
 });
 
 app.get('/signup', function(req, res) {
-    res.render('signup', { page: "sign", isUserLog: req.session.islogged, alert: "please Sign UP" });
+    res.render('signup', { page: "sign", isUserLog: undefined, alert: undefined });
 });
 
 app.post('/signup', function(req, res) {
@@ -215,7 +218,7 @@ app.post('/signup', function(req, res) {
 
         } else {
             console.log("user already exist");
-            res.render('signup', { page: "sign", isUserLog: req.session.islogged, alert: "user already exist" });
+            res.render('signup', { page: "sign", isUserLog: undefined, alert: "user already exist" });
         }
 
     });
@@ -223,8 +226,7 @@ app.post('/signup', function(req, res) {
 });
 
 app.get('/signin', function(req, res) {
-    res.render('signin', { page: "sign", isUserLog: req.session.islogged, alert: "please Sign IN" });
-
+    res.render('signin', { page: "sign", isUserLog: undefined, alert: undefined });
 });
 
 app.post('/signin', function(req, res) {
@@ -233,7 +235,7 @@ app.post('/signin', function(req, res) {
     query.exec(function(error, user) {
         if (user == undefined) {
             console.log("user mail doesn't exist");
-            res.render('signin', { page: "sign", isUserLog: req.session.islogged, alert: "user unknown" });
+            res.render('signin', { page: "sign", isUserLog: undefined, alert: "user unknown" });
         } else {
             if (user.userPassword == req.body.password) {
                 console.log("user and password OK");
@@ -242,7 +244,7 @@ app.post('/signin', function(req, res) {
                 res.redirect("/");
             } else {
                 console.log("wrong password");
-                res.render('signin', { page: "sign", isUserLog: req.session.islogged, alert: "wrong password" });
+                res.render('signin', { page: "sign", isUserLog: undefined, alert: "wrong password" });
             }
         }
 
@@ -258,6 +260,27 @@ app.get('/signout', function(req, res) {
 app.get('/contact', function(req, res) {
     res.render('contact', { page: "contact", isUserLog: req.session.islogged });
 
+});
+
+
+
+app.post('/pay', function(req, res) {
+    //montant (en centimes)
+    var amount = 500;
+
+    // stripe créé une liste de clients
+    stripe.customers.create({
+            email: req.body.stripeEmail,
+            source: req.body.stripeToken
+        }) // une fois que la liste de clients est créée, on créé la transactio,
+        .then(customer =>
+            stripe.charges.create({
+                amount,
+                description: "Sample Charge",
+                currency: "eur",
+                customer: customer.id
+            })) // une fois la transaction créée, on fait un render de la page
+        .then(charge => res.redirect('/'));
 });
 
 //////// LISTEN

@@ -1,7 +1,6 @@
 window.onload = function() {
     console.log("main js OK");
 
-
     var buttonSearch = document.querySelector(".search-btn");
     buttonSearch.addEventListener('click', function(e) {
         var searchInputVal = document.getElementById("search").value;
@@ -16,6 +15,10 @@ window.onload = function() {
         likeIfNotLog[i].addEventListener("mouseover", function(event) {
             // met en surbrillance la cible de mouseover
             console.log(this.children[0].classList.value = "fa fa-sign-in");
+        });
+        likeIfNotLog[i].addEventListener("mouseout", function(event) {
+            // met en surbrillance la cible de mouseover
+            console.log(this.children[0].classList.value = "fa fa-heart-o");
         });
 
     }

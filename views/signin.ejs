@@ -38,10 +38,11 @@
 						<div class="row">
 							<div class="col-md-offset-3 col-md-6">
 								<h2>Login your account</h2>
-								<p class="alert"><%if (alert != undefined){ %>
-									<%=alert%>
-									<%}%>
-								</p>
+
+								<%if (alert != undefined){ %>
+								<p class="alert"><%=alert%></p>
+								<%}%>
+
 
 								<form action ="/signin" method="post" class="contact-form">
 									<input name="email" type="email" placeholder="email">

@@ -265,6 +265,11 @@ table {
 
 
 
+
+
+
+
+
 /*
  * Global Styles
  */
@@ -334,6 +339,11 @@ form select {
 form textarea {
     resize: vertical;
 }
+
+
+
+
+
 
 
 
@@ -575,6 +585,11 @@ ul.arrow li a {
 ul.arrow li a:hover {
     color: #ffaa3c;
 }
+
+
+
+
+
 
 
 
@@ -2025,6 +2040,11 @@ all and (min-device-pixel-ratio: 1.5) {
 
 
 
+
+
+
+
+
 /*
  * Header Styles
  */
@@ -2466,6 +2486,11 @@ all and (min-device-pixel-ratio: 1.5) {
 
 
 
+
+
+
+
+
 /*
  * Footer Styles
  */
@@ -2517,5 +2542,10 @@ all and (min-device-pixel-ratio: 1.5) {
 }
 
 .alert {
-    color: #ffaa3c;
+    background-color: rgba(255, 170, 60, 0.2);
+    color: rgb(255, 170, 60);
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem; //border: 1px solid rgba(255, 170, 60, 0.5);
+    border-radius: .25rem;
 }
