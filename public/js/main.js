@@ -22,6 +22,13 @@ window.onload = function() {
         });
     }
 
+
+    // var contactEmail = document.getElementById("contactEmail");
+    // contactEmail.addEventListener("blur", function(event) {
+    //     console.log(event.target.value);
+    //     $.getJSON("contact?contactEmail=" + event.target.value, function(data) {});
+    // }, true);
+
     //////////// STRIPE (PAIEMENT) /////////////
     var handler = StripeCheckout.configure({
         key: 'pk_test_jgs8oU31vZyptK58OorgY48E',

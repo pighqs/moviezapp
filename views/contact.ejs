@@ -51,10 +51,14 @@
 								<form action ="/contact" method="post" class="contact-form">
 									<input name="firstName" type="text" class="firstname"  placeholder="firstname...">
 									<input name="lastName" type="text" class="lastname" placeholder="lastname...">
-									<input name="email"  type ="email" class="email" placeholder="email..." required >
+									<input id="contactEmail" name="email"  type ="email" class="email" placeholder="email..." required >
 									<textarea name="msgContent" class="message" placeholder="message..."></textarea>
 									<input type="submit" value="Send Message ">
 								</form>
+
+								<%if (alert !== undefined){ %>
+								<p class="alert"><%=alert%></p>
+								<%}%>
 							</div>
 							<div class="col-md-7 col-md-offset-1">
 								<div class="map"></div>

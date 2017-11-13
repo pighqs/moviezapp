@@ -20,7 +20,8 @@
     "mongoose": " ^ 4.13 .0 ",
     "request": "^2.83.0",
     "save": "^2.3.1",
-    "stripe": "^5.3.0"
+    "stripe": "^5.3.0",
+    "trello": "^0.8.0"
   },
   "devDependencies": {},
   "repository": {

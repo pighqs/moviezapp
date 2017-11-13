@@ -16,8 +16,10 @@ app.use(bodyParser.json());
 
 //MailChimp
 var Mailchimp = require('mailchimp-api-v3');
-var mailchimp = new Mailchimp("e0ba9b7aab0863c700ffb660fb1d950b-us17");
-var myList = "6414d49f08";
+
+// Trello
+var Trello = require("trello");
+
 
 var request = require('request');
 
@@ -26,7 +28,6 @@ var stripe = require("stripe")("sk_test_IoTOHpFg6GZ05nSAPpzkhYMp");
 
 // SESSION
 var session = require("express-session");
-
 app.use(
     session({
         secret: 'a4f8071f-c873-4447-8ee2',
@@ -35,14 +36,13 @@ app.use(
     })
 );
 
-
 // BASE DE DONNEES
-
-var movies = [];
 var apiKey = "3b0ada6d415a01999b9b2da681c2829f";
 var sort = "vote_count.desc";
 var lang = "fr-FR";
+var movies = [];
 
+// passerelle connection DB : Mongoose
 var mongoose = require('mongoose');
 // pour empêcher erreur si base de donnees met trop longtemps a repondre
 var options = { server: { socketOptions: { connectTimeoutMS: 30000 } } };
@@ -69,13 +69,15 @@ var userSchema = mongoose.Schema({
     userPassword: String
 });
 
-
 // models
 var MovieModel = mongoose.model('movies', movieSchema);
 var UserModel = mongoose.model('users', userSchema);
 
+////////////////////////////////////////
+//////////////// ROUTES ////////////////
+////////////////////////////////////////
 
-//////// ROUTES
+//////////////// Home ////////////////
 app.get('/', function(req, res) {
 
     console.log("logged ? " + req.session.islogged);
@@ -95,11 +97,9 @@ app.get('/', function(req, res) {
         });
 
     });
-
 });
 
-
-
+//////////////// Like ////////////////
 app.get('/like', function(req, res) {
     if (req.session.islogged === true) {
         if (req.query.movieID && req.query.movieID != "") {
@@ -138,20 +138,21 @@ app.get('/like', function(req, res) {
 
         }
 
-    } else if (req.session.islogged === false || req.session.islogged === undefined) {
+    } else if (!req.session.islogged) {
         res.redirect("/signup");
     }
 });
 
+//////////////// Unlike ////////////////
 app.get('/unlike', function(req, res) {
     // recupere ID unique envoyé en requête et supprime entrée correspondante dans la base de données
     MovieModel.remove({ movieID: req.query.movieID, likeByUser: req.session.userID }, function(error, ville) {
         //on redirige sur la home
         res.redirect("/");
     });
-
 });
 
+//////////////// Review ////////////////
 app.get('/review', function(req, res) {
     if (req.session.islogged === true) {
         var query = MovieModel.find({ likeByUser: req.session.userID });
@@ -163,7 +164,7 @@ app.get('/review', function(req, res) {
     }
 });
 
-
+//////////////// Single ////////////////
 app.get('/single', function(req, res) {
     var movieID = req.query.movieID;
 
@@ -181,7 +182,7 @@ app.get('/single', function(req, res) {
     });
 });
 
-
+//////////////// Search ////////////////
 app.get('/search', function(req, res) {
     var recherche = req.query.movieSearch;
     var searchURL = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query=" + recherche;
@@ -195,6 +196,7 @@ app.get('/search', function(req, res) {
     });
 });
 
+//////////////// SignUP ////////////////
 app.get('/signup', function(req, res) {
     res.render('signup', { page: "sign", isUserLog: undefined, alert: undefined });
 });
@@ -203,7 +205,7 @@ app.post('/signup', function(req, res) {
 
     var query = UserModel.findOne({ userEmail: req.body.email });
     query.exec(function(error, user) {
-        if (user === undefined) {
+        if (!user) {
             // on récupère les infos de body pour assigner une nouvelle variable newCity
             var newUser = new UserModel({
                 userEmail: req.body.email,
@@ -225,9 +227,9 @@ app.post('/signup', function(req, res) {
         }
 
     });
-
 });
 
+//////////////// SignIN ////////////////
 app.get('/signin', function(req, res) {
     res.render('signin', { page: "sign", isUserLog: undefined, alert: undefined });
 });
@@ -236,7 +238,7 @@ app.post('/signin', function(req, res) {
 
     var query = UserModel.findOne({ userEmail: req.body.email });
     query.exec(function(error, user) {
-        if (user === undefined) {
+        if (!user) {
             console.log("user mail doesn't exist");
             res.render('signin', { page: "sign", isUserLog: undefined, alert: "user unknown" });
         } else {
@@ -254,21 +256,27 @@ app.post('/signin', function(req, res) {
     });
 });
 
-
+//////////////// SignOUT ////////////////
 app.get('/signout', function(req, res) {
     req.session.islogged = false;
     res.redirect("/");
 });
 
-
+//////////////// Contact ////////////////
 app.get('/contact', function(req, res) {
-    console.log("sur page contact");
-    res.render('contact', { page: "contact", isUserLog: req.session.islogged });
-
+    res.render('contact', { page: "contact", isUserLog: req.session.islogged, alert: undefined });
 });
 
 app.post('/contact', function(req, res) {
-    // récupère indfos du formulaire de contact et créée nouveau membre dans la liste mailchimp entrée en paramètre :
+    var trello = new Trello("297d056c2efb0072e0414f13f6432b34", "86c2e81ae99d6740405e9b33e67d49734efbbbe0ec031236b512de6ea0c086f0");
+    var trelloCardNewContact = "5a09a7e422c2f1bda121471c";
+    var trelloCardNotInterested = "5a09a7eafcacac01f997ba2a";
+    var trelloCardLater = "5a09a7ee3f679fd47bb18978";
+    var trelloCardClients = "5a09a7f7ea8af85f9b2f99bd";
+
+    var mailchimp = new Mailchimp(mailChimpAPIKey);
+    var myList = "6414d49f08";
+    // récupère infos du formulaire de contact et créée nouveau membre dans la liste mailchimp entrée en paramètre :
     mailchimp.post('/lists/' + myList + '/members', {
             email_address: req.body.email,
             status: 'subscribed',
@@ -279,23 +287,47 @@ app.post('/contact', function(req, res) {
             }
         })
         .then(function(results) {
+            var query = UserModel.findOne({ userEmail: req.body.email });
+            query.exec(function(error, user) {
+                if (!user) {
+                    // on récupère les infos de body pour assigner une nouvelle variable newCity
+                    var newUser = new UserModel({
+                        userEmail: req.body.email,
+                    });
+
+
+                    // on insere dans la base de donnees
+                    newUser.save(function(error, user) {
+                        console.log("contact saved in DB");
+                    });
+                    // on ajoute carte dans liste Nouveau Contact dans tableau Trello Moviez
+                    trello.addCard(req.body.email, req.body.msgContent, trelloCardNewContact,
+                        function(error, trelloCard) {
+                            if (error) {
+                                console.log("Could not add card:" + error);
+                            } else {
+                                console.log("card added");
+                            }
+                        });
+
+
+                } else {
+                    console.log("user not save in DB : already exists");
+                }
+            });
             res.redirect("/");
+
         })
+
         .catch(function(err) {
-            console.log(err);
+            //console.log(err.title);
+            res.render('contact', { page: "contact", isUserLog: req.session.islogged, alert: err.title });
         });
 });
 
-app.get('/memberList', (req, res) => {
-    mailchimp.get('/lists/' + myList + '/members')
-        .then(function(results) {
-            res.send(results);
-        })
-        .catch(function(err) {
-            res.send(err);
-        });
-});
 
+
+//////////////// Pay ////////////////
 app.post('/pay', function(req, res) {
     //montant (en centimes)
     var amount = 500;
