@@ -44,7 +44,7 @@ window.onload = function() {
     for (var i = 0; i < payBtns.length; i++) {
         payBtns[i].addEventListener('click', function(e) {
             titleMovie = this.getAttribute('data-title');
-            // Open Checkout with further options:
+            // Ouvre formulaire de checkout avec ces options:
             handler.open({
                 name: titleMovie,
                 description: 'VOD Purchase',
