@@ -14,12 +14,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-//MailChimp
+// MailChimp
 var Mailchimp = require('mailchimp-api-v3');
 
 // Trello
 var Trello = require("trello");
 
+// ApiKEYS
+var myKEYS = require('./hide_Content/ApiKEYS');
 
 var request = require('request');
 
@@ -36,8 +38,7 @@ app.use(
     })
 );
 
-// BASE DE DONNEES
-var apiKey = "3b0ada6d415a01999b9b2da681c2829f";
+// Moviez
 var sort = "vote_count.desc";
 var lang = "fr-FR";
 var movies = [];
@@ -83,7 +84,7 @@ app.get('/', function(req, res) {
     console.log("logged ? " + req.session.islogged);
 
 
-    var moviesDiscoverURL = "https://api.themoviedb.org/3/discover/movie?api_key=" + apiKey + "&language=" + lang + "&sort_by=" + sort + "&include_adult=true&include_video=false&page=1";
+    var moviesDiscoverURL = "https://api.themoviedb.org/3/discover/movie?api_key=" + myKEYS.themoviedbAPIKey + "&language=" + lang + "&sort_by=" + sort + "&include_adult=true&include_video=false&page=1";
 
     request(moviesDiscoverURL, function(error, response, body) {
 
@@ -106,7 +107,7 @@ app.get('/like', function(req, res) {
             var movieID = req.query.movieID;
 
             //la ville demandée en url via le formulaire à openweathermap est stockée dans une variable
-            var movieURL = "https://api.themoviedb.org/3/movie/" + movieID + "?api_key=" + apiKey + "&language=" + lang;
+            var movieURL = "https://api.themoviedb.org/3/movie/" + movieID + "?api_key=" + myKEYS.themoviedbAPIKey + "&language=" + lang;
 
             request(movieURL, function(error, response, body) {
                 // seulement si la réponse n'est pas 404 ()
@@ -169,8 +170,8 @@ app.get('/single', function(req, res) {
     var movieID = req.query.movieID;
 
     //la ville demandée en url via le formulaire à openweathermap est stockée dans une variable
-    var movieURL = "https://api.themoviedb.org/3/movie/" + movieID + "?api_key=" + apiKey + "&language=" + lang;
-    var creditsURL = "https://api.themoviedb.org/3/movie/" + movieID + "/credits?api_key=" + apiKey;
+    var movieURL = "https://api.themoviedb.org/3/movie/" + movieID + "?api_key=" + myKEYS.themoviedbAPIKey + "&language=" + lang;
+    var creditsURL = "https://api.themoviedb.org/3/movie/" + movieID + "/credits?api_key=" + myKEYS.themoviedbAPIKey;
 
     request(movieURL, function(error, response, body) {
         body = JSON.parse(body);
@@ -185,7 +186,7 @@ app.get('/single', function(req, res) {
 //////////////// Search ////////////////
 app.get('/search', function(req, res) {
     var recherche = req.query.movieSearch;
-    var searchURL = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query=" + recherche;
+    var searchURL = "https://api.themoviedb.org/3/search/movie?api_key=" + myKEYS.themoviedbAPIKey + "&query=" + recherche;
 
     request(searchURL, function(error, response, searchResults) {
         movies = JSON.parse(searchResults);
@@ -268,13 +269,13 @@ app.get('/contact', function(req, res) {
 });
 
 app.post('/contact', function(req, res) {
-    var trello = new Trello("297d056c2efb0072e0414f13f6432b34", "86c2e81ae99d6740405e9b33e67d49734efbbbe0ec031236b512de6ea0c086f0");
+    var trello = new Trello(myKEYS.trelloAPIKey, "86c2e81ae99d6740405e9b33e67d49734efbbbe0ec031236b512de6ea0c086f0");
     var trelloCardNewContact = "5a09a7e422c2f1bda121471c";
     var trelloCardNotInterested = "5a09a7eafcacac01f997ba2a";
     var trelloCardLater = "5a09a7ee3f679fd47bb18978";
     var trelloCardClients = "5a09a7f7ea8af85f9b2f99bd";
 
-    var mailchimp = new Mailchimp(mailChimpAPIKey);
+    var mailchimp = new Mailchimp(myKEYS.mailChimpAPIKey);
     var myList = "6414d49f08";
     // récupère infos du formulaire de contact et créée nouveau membre dans la liste mailchimp entrée en paramètre :
     mailchimp.post('/lists/' + myList + '/members', {
