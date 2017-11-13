@@ -10,11 +10,14 @@ app.set('view engine', 'ejs');
 
 var bodyParser = require('body-parser');
 // bodyParser permet de gerer les requetes HTTP POST : extrait le corps entier de la requete et le met dans req.body
-
 app.use(bodyParser.urlencoded({ extended: false }));
-
 // parse application/json
 app.use(bodyParser.json());
+
+//MailChimp
+var Mailchimp = require('mailchimp-api-v3');
+var mailchimp = new Mailchimp("e0ba9b7aab0863c700ffb660fb1d950b-us17");
+var myList = "6414d49f08";
 
 var request = require('request');
 
@@ -98,7 +101,7 @@ app.get('/', function(req, res) {
 
 
 app.get('/like', function(req, res) {
-    if (req.session.islogged == true) {
+    if (req.session.islogged === true) {
         if (req.query.movieID && req.query.movieID != "") {
             var movieID = req.query.movieID;
 
@@ -135,7 +138,7 @@ app.get('/like', function(req, res) {
 
         }
 
-    } else if (req.session.islogged == false || req.session.islogged == undefined) {
+    } else if (req.session.islogged === false || req.session.islogged === undefined) {
         res.redirect("/signup");
     }
 });
@@ -150,7 +153,7 @@ app.get('/unlike', function(req, res) {
 });
 
 app.get('/review', function(req, res) {
-    if (req.session.islogged == true) {
+    if (req.session.islogged === true) {
         var query = MovieModel.find({ likeByUser: req.session.userID });
         query.exec(function(error, datas) {
             res.render('review', { movies: datas, page: "review", isUserLog: req.session.islogged });
@@ -200,7 +203,7 @@ app.post('/signup', function(req, res) {
 
     var query = UserModel.findOne({ userEmail: req.body.email });
     query.exec(function(error, user) {
-        if (user == undefined) {
+        if (user === undefined) {
             // on récupère les infos de body pour assigner une nouvelle variable newCity
             var newUser = new UserModel({
                 userEmail: req.body.email,
@@ -233,11 +236,11 @@ app.post('/signin', function(req, res) {
 
     var query = UserModel.findOne({ userEmail: req.body.email });
     query.exec(function(error, user) {
-        if (user == undefined) {
+        if (user === undefined) {
             console.log("user mail doesn't exist");
             res.render('signin', { page: "sign", isUserLog: undefined, alert: "user unknown" });
         } else {
-            if (user.userPassword == req.body.password) {
+            if (user.userPassword === req.body.password) {
                 console.log("user and password OK");
                 req.session.islogged = true;
                 req.session.userID = user._id;
@@ -257,11 +260,41 @@ app.get('/signout', function(req, res) {
     res.redirect("/");
 });
 
+
 app.get('/contact', function(req, res) {
+    console.log("sur page contact");
     res.render('contact', { page: "contact", isUserLog: req.session.islogged });
 
 });
 
+app.post('/contact', function(req, res) {
+    // récupère indfos du formulaire de contact et créée nouveau membre dans la liste mailchimp entrée en paramètre :
+    mailchimp.post('/lists/' + myList + '/members', {
+            email_address: req.body.email,
+            status: 'subscribed',
+            merge_fields: {
+                "FNAME": req.body.firstName,
+                "LNAME": req.body.lastName,
+                "MESS": req.body.msgContent
+            }
+        })
+        .then(function(results) {
+            res.redirect("/");
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
+});
+
+app.get('/memberList', (req, res) => {
+    mailchimp.get('/lists/' + myList + '/members')
+        .then(function(results) {
+            res.send(results);
+        })
+        .catch(function(err) {
+            res.send(err);
+        });
+});
 
 app.post('/pay', function(req, res) {
     //montant (en centimes)

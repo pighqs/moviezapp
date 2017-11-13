@@ -13,19 +13,19 @@
                     <ul class="menu">
 
                         <!--  si la page en cours est la page search, single, sign ou 'undefined' -->
-                        <% if (page === 'search' || page === 'single' || page === 'sign' || page == undefined) { %>
+                        <% if (page === 'search' || page === 'single' || page === 'sign' || page === undefined) { %>
                                 <li class="menu-item"><a href="/">Last releases</a></li>
                                 <li class="menu-item"><a href="contact">Contact</a></li>
 
 
                             <!-- si un utilisateur est loggé -->
-                            <%if(isUserLog == true) { %>
+                            <%if(isUserLog === true) { %>
 
                                 <li class="menu-item"><a href="review">My movies</a></li>
                                 <li class="menu-item"><a href="signout">Sign out</a></li>
 
                             <!-- si l'utilisateur n'est pas loggé -->
-                            <% }  else if (isUserLog == false || isUserLog == undefined) { %>
+                            <% }  else if (isUserLog === false || isUserLog === undefined) { %>
 
                                 <li class="menu-item"><a href="signup">Sign up</a></li>
                                 <li class="menu-item"><a href="signin">Sign in</a></li>
@@ -41,7 +41,7 @@
                                 } else { %> class="menu-item" <% } %> ><a href="contact">Contact</a></li>
 
                             <!-- si un utilisateur est loggé -->
-                            <% if(isUserLog == true) { %>
+                            <% if(isUserLog === true) { %>
 
                                  <li <% if (page === 'review') { %> class="menu-item current-menu-item" <%
                                 } else { %> class="menu-item" <% } %> ><a href="review">My movies</a></li>
@@ -49,7 +49,7 @@
 
 
                             <!-- si l'utilisateur n'est pas loggé -->
-                            <% }  else if (isUserLog == false || isUserLog == undefined) { %>
+                            <% }  else if (isUserLog === false || isUserLog === undefined) { %>
 
                                 <li class="menu-item"><a href="signup">Sign up</a></li>
                                 <li class="menu-item"><a href="signin">Sign in</a></li>

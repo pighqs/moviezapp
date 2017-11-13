@@ -16,6 +16,7 @@
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "mailchimp-api-v3": "^1.7.1",
     "mongoose": " ^ 4.13 .0 ",
     "request": "^2.83.0",
     "save": "^2.3.1",
