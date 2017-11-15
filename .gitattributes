@@ -1,6 +1,4 @@
-public/style.css* linguist-vendored
-public/dummy/* linguist-vendored
-public/fonts/* linguist-vendored
-public/images/* linguist-vendored
+public/* linguist-vendored
+
 
 
