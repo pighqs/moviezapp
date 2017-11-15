@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 var Mailchimp = require('mailchimp-api-v3');
 
 // Trello
-var Trello = require("trello");
+var Trello = require('trello');
 
 // ApiKEYS
 var myKEYS = require('./hide_Content/ApiKEYS');
@@ -277,6 +277,7 @@ app.post('/contact', function(req, res) {
 
     var mailchimp = new Mailchimp(myKEYS.mailChimpAPIKey);
     var myList = "6414d49f08";
+
     // récupère infos du formulaire de contact et créée nouveau membre dans la liste mailchimp entrée en paramètre :
     mailchimp.post('/lists/' + myList + '/members', {
             email_address: req.body.email,
